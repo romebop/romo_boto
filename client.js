@@ -1,16 +1,30 @@
 populateChat('Arteezy');
 populateChat('Eternalenvyy');
 
+var socket = io();
+
+socket.on('message', function(obj) {
+  var target = obj['target'];
+  var date = datify(obj['date']);
+  var message = obj['message'];
+  appendChat(target, date, message);
+  scrollBottom(target);
+});
+
 function populateChat(target) {
   $.getJSON(target + '.json', function(json){
     var chatArray = json;
     for (var i = 0; i < chatArray.length; i++) {
       var date = datify(chatArray[i]['date']);
       var message = chatArray[i]['message']
-      $('#' + target + '-list').append('<li><p class="date">' + date + ':</p><b>' + message + '</b></li>');
+      appendChat(target, date, message);
     }
     scrollBottom(target);
   });
+}
+
+function appendChat(target, date, message) {
+  $('#' + target + '-list').append('<li><p class="date">' + date + ':</p><b>' + message + '</b></li>');
 }
 
 function scrollBottom(target) {

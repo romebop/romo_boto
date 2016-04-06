@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const http = require('http').Server(app);
+const io = require('socket.io')(http);
 const tmi = require('tmi.js');
 const fs = require('fs');
 
@@ -27,21 +28,26 @@ var options = {
     password: 'oauth:d9w2t4p1kda84xfrpsotemysan3mry'
   },
   channels: ['arteezy', 'eternalenvyy']
-  //channels: ['rome_bop']
 };
 
 var client = new tmi.client(options);
 client.connect();
 
-client.on('chat', function(channel, user, message, self) {
-  function record(target) {
-    if (user['display-name'] === target) { // || user['display-name'] === 'rome_bop') {
-      var msg = { date: Date.now(), message }; 
-      storeJSON(target + '.json', msg);
+io.on('connection', function(socket) {
+
+  client.on('chat', function(channel, user, message, self) {
+    function record(target) {
+      if (user['display-name'] === target) {
+        var msg = { date: Date.now(), message }; 
+        storeJSON(target + '.json', msg);
+        msg['target'] = target;
+        socket.emit('message', msg);
+      }
     }
-  }
-  record('Arteezy');
-  record('Eternalenvyy')
+    record('Arteezy');
+    record('Eternalenvyy')
+  });
+
 });
 
 function storeJSON(file, message) {
