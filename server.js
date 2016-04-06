@@ -26,8 +26,8 @@ var options = {
     username: 'romo_boto',
     password: 'oauth:d9w2t4p1kda84xfrpsotemysan3mry'
   },
-  //channels: ['arteezy', 'eternalenvyy']
-  channels: ['rome_bop']
+  channels: ['arteezy', 'eternalenvyy']
+  //channels: ['rome_bop']
 };
 
 var client = new tmi.client(options);
@@ -35,7 +35,7 @@ client.connect();
 
 client.on('chat', function(channel, user, message, self) {
   function record(target) {
-    if (user['display-name'] === target || user['display-name'] === 'rome_bop') {
+    if (user['display-name'] === target) { // || user['display-name'] === 'rome_bop') {
       var msg = { date: Date.now(), message }; 
       storeJSON(target + '.json', msg);
     }
