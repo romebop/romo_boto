@@ -1,0 +1,56 @@
+#Arteezy {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 48%;
+  background-color: black;
+  padding: 1%;
+  color: white;
+}
+
+#Arteezy-list {
+  position: absolute;
+  left: 5%;
+  top: 5%;
+  bottom: 0;
+  width: 95%;
+  overflow-y: scroll;
+  padding: 0;
+}
+
+#Eternalenvyy {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  right: 0; 
+  padding: 1%;
+}
+
+#Eternalenvyy-list {
+  position: absolute;
+  left: 5%;
+  top: 5%;
+  bottom: 0;
+  width: 95%;
+  overflow-y: scroll;
+  padding: 0;
+}
+
+p {
+  margin: 5px;
+  font-size: 12px;
+}
+
+li {
+  list-style-type: none;
+}
+
+.date {
+  display: inline;
+}
+
+.header {
+  font-size: 20px;
+}
