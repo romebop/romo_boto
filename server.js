@@ -15,40 +15,66 @@ http.listen(app.get('port'), function() {
   console.log('Server running on localhost:' + app.get('port'));
 });
 
-var options = {
-  options: {
-    debug: true
-  },
-  connection: {
-    cluster: 'aws',
-    reconncet: true
-  },
-  identity: {
-    username: 'romo_boto',
-    password: 'oauth:d9w2t4p1kda84xfrpsotemysan3mry'
-  },
-  channels: ['arteezy', 'eternalenvyy']
-};
+fs.readFile('config.json', function(err, data) {
+  if (err) throw err;
+  else {
+    var config = JSON.parse(data);
+    var username = config.username;
+    var password = config.password;
+    doRest(username, password);
+  }
+});
 
-var client = new tmi.client(options);
-client.connect();
+function doRest(username, password) {
+  
+  var options = {
+    options: {
+      debug: true
+    },
+    connection: {
+      cluster: 'aws',
+      reconncet: true
+    },
+    identity: {
+      username,
+      password
+    },
+    //channels: ['arteezy', 'eternalenvyy']
+    channels: ['rome_bop']
+  };
 
-io.on('connection', function(socket) {
+  var client = new tmi.client(options);
+  client.connect();
 
   client.on('chat', function(channel, user, message, self) {
     function record(target) {
-      if (user['display-name'] === target) {
+      if (user['display-name'] === target || user['display-name'] === 'rome_bop') {
         var msg = { date: Date.now(), message }; 
         storeJSON(target + '.json', msg);
-        msg['target'] = target;
-        socket.emit('message', msg);
       }
     }
     record('Arteezy');
-    record('Eternalenvyy')
+    record('Eternalenvyy');
+    if (message === 'romo_boto are you there?') {
+      client.action(channel, "I am here! :D");
+    }
   });
 
-});
+  // socket new chat messages to client
+  io.on('connection', function(socket) {
+    client.on('chat', function(channel, user, message, self) {
+      function update(target) {
+        if (user['display-name'] === target || user['display-name'] === 'rome_bop') {
+          var msg = { date: Date.now(), message, target }; 
+          socket.emit('message', msg);
+        }
+      }
+      update('Arteezy');
+      update('Eternalenvyy');
+    });
+  });
+
+};
 
 function storeJSON(file, message) {
   fs.readFile(file, function(err, data) {
