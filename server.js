@@ -38,8 +38,8 @@ var options = {
     username,
     password
   },
-  //channels: ['arteezy', 'eternalenvyy']
-  channels: ['rome_bop']
+  channels: ['arteezy', 'eternalenvyy']
+  //channels: ['rome_bop']
 };
 
 var client = new tmi.client(options);
@@ -47,14 +47,14 @@ client.connect();
 
 client.on('chat', function(channel, user, message, self) {
   function record(target) {
-    if (user['display-name'] === target || user['display-name'] === 'rome_bop') {
+    if (user['display-name'] === target) {
       var msg = { date: Date.now(), message }; 
       storeJSON(target + '.json', msg);
     }
   }
   record('Arteezy');
   record('Eternalenvyy');
-  if (message === 'romo_boto are you there?') {
+  if (message === 'romo_boto, are you there?') {
     client.action(channel, "I am here! :D");
   }
 });
@@ -63,7 +63,7 @@ client.on('chat', function(channel, user, message, self) {
 io.on('connection', function(socket) {
   client.on('chat', function(channel, user, message, self) {
     function update(target) {
-      if (user['display-name'] === target || user['display-name'] === 'rome_bop') {
+      if (user['display-name'] === target) {
         var msg = { date: Date.now(), message, target }; 
         socket.emit('message', msg);
       }
