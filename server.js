@@ -47,7 +47,7 @@ client.connect();
 
 client.on('chat', function(channel, user, message, self) {
   function record(target) {
-    if (user['display-name'] === target) {
+    if (user['display-name'] === target || user['display-name'] === 'Moobot') {
       var msg = { date: Date.now(), message }; 
       storeJSON(target + '.json', msg);
     }
@@ -63,7 +63,7 @@ client.on('chat', function(channel, user, message, self) {
 io.on('connection', function(socket) {
   client.on('chat', function(channel, user, message, self) {
     function update(target) {
-      if (user['display-name'] === target) {
+      if (user['display-name'] === target || user['display-name'] === 'Moobot') {
         var msg = { date: Date.now(), message, target }; 
         socket.emit('message', msg);
       }
