@@ -57,8 +57,7 @@ var options = {
     username: twitch_username,
     password: twitch_password
   },
-  //channels: ['arteezy', 'eternalenvyy']
-  channels: ['rome_bop']
+  channels: ['arteezy', 'eternalenvyy']
 };
 
 var client = new tmi.client(options);
