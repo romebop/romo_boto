@@ -12,15 +12,12 @@ socket.on('message', function(obj) {
 });
 
 function populateChat(target) {
-  $.getJSON(target + '.json', function(json){
-    var chatArray = json;
-    for (var i = 0; i < chatArray.length; i++) {
-      var date = datify(chatArray[i]['date']);
-      var message = chatArray[i]['message']
-      appendChat(target, date, message);
-    }
+  $.getJSON('/' + target, function(data) {
+    data.forEach( function(d) {
+      appendChat(target, datify(d.date), d.message);
+    });
     scrollBottom(target);
-  });
+  });  
 }
 
 function appendChat(target, date, message) {
