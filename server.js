@@ -12,11 +12,11 @@ app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 app.get('/Arteezy', function(req, res) {
-  res.json(ArteezyChat);
-})
+  connectAndRespond(mongoURL, 'Arteezy', res);
+});
 app.get('/Eternalenvyy', function(req, res) {
-  res.json(EternalenvyyChat);
-})
+  connectAndRespond(mongoURL, 'Eternalenvyy', res);
+});
 app.use(express.static(__dirname));
 
 http.listen(app.get('port'), function() {
@@ -40,11 +40,6 @@ try {
 
 var mongoURL = 'mongodb://' + mongo_username + ':' + mongo_password + '@ds019990.mlab.com:19990/heroku_mfhrc2hl';
 
-var ArteezyChat
-  , EternalenvyyChat
-  ;
-loadChats(mongoURL);
-
 var options = {
   options: {
     debug: true
@@ -57,35 +52,36 @@ var options = {
     username: twitch_username,
     password: twitch_password
   },
-  channels: ['arteezy', 'eternalenvyy']
+  //channels: ['arteezy', 'eternalenvyy']
+  channels: ['rome_bop']
 };
 
 var client = new tmi.client(options);
 client.connect();
 
-// store new chat into datastore
+// store new messages into mongo
 client.on('chat', function(channel, user, message, self) {
-  function record(target) {
-    if (true) { //user['display-name'] === target) {
-      var msg = { date: Date.now(), message };
-      if (target === "Arteezy") ArteezyChat.push(msg);
-      if (target === "Eternalenvyy") EternalenvyyChat.push(msg);
-      updateDB(mongoURL, target);
+  function record(source) {
+    if (user['display-name'] === source || user['display-name'] === 'rome_bop') {
+      var msg = { date: Date.now(), message, source };
+      storeMessage(mongoURL, msg);
     }
   }
   record('Arteezy');
   record('Eternalenvyy');
+
   if (message === 'romo_boto, are you there?') {
     client.action(channel, "I am here! :D");
   }
+
 });
 
 // socket new chat messages to client
 io.on('connection', function(socket) {
   client.on('chat', function(channel, user, message, self) {
-    function update(target) {
-      if (true) { //user['display-name'] === target) {
-        var msg = { date: Date.now(), message, target }; 
+    function update(source) {
+      if (user['display-name'] === source || user['display-name'] === 'rome_bop') {
+        var msg = { date: Date.now(), message, source }; 
         socket.emit('message', msg);
       }
     }
@@ -94,42 +90,26 @@ io.on('connection', function(socket) {
   });
 });
 
-function loadChats(url) {
+// document schema: { date, message, source }
+function storeMessage(url, message) {
   mongo.connect(url, function(err, db) {
-    assert.equal(null, err);  
-    var cursor = db.collection('messages').find();
-    cursor.each(function(err, doc) {
-      assert.equal(null, err);
-      if (!doc) db.close();
-      else if (doc.target === "Arteezy") {
-        ArteezyChat = doc.log;
-      }
-      else if (doc.target === "Eternalenvyy") {
-        EternalenvyyChat = doc.log;
-      }
+    if (err) throw err;
+    var col = db.collection('messages');
+    col.insertOne(message, function(err, r) {
+      if (err) throw err;
+      db.close();
     });
   });
 }
 
-function updateDB(url, target) {
+// connect to database and send json response
+function connectAndRespond(url, source, res) {
   mongo.connect(url, function(err, db) {
-    assert.equal(null, err);
-    var col = db.collection('messages');
-    if (target === "Arteezy") {
-      col.update({ target : target }
-        , { $set: { log : ArteezyChat } }, function(err, result) {
-          assert.equal(err, null);
-          db.close();
-        }
-      );
-    }
-    if (target === "Eternalenvyy") {
-      col.update({ target : target }
-        , { $set: { log : EternalenvyyChat } }, function(err, result) {
-          assert.equal(err, null);
-          db.close();
-        }
-      ); 
-    }
+    if (err) throw err;
+    db.collection('messages').find({source: source}).toArray(function(err, docs) {
+      if (err) throw err;
+      res.json(docs);
+      db.close();
+    });
   });
 }

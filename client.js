@@ -4,28 +4,28 @@ populateChat('Eternalenvyy');
 var socket = io();
 
 socket.on('message', function(obj) {
-  var target = obj['target'];
+  var source = obj['source'];
   var date = datify(obj['date']);
   var message = obj['message'];
-  appendChat(target, date, message);
-  scrollBottom(target);
+  appendChat(source, date, message);
+  scrollBottom(source);
 });
 
-function populateChat(target) {
-  $.getJSON('/' + target, function(data) {
+function populateChat(source) {
+  $.getJSON('/' + source, function(data) {
     data.forEach( function(d) {
-      appendChat(target, datify(d.date), d.message);
+      appendChat(source, datify(d.date), d.message);
     });
-    scrollBottom(target);
+    scrollBottom(source);
   });  
 }
 
-function appendChat(target, date, message) {
-  $('#' + target + '-list').append('<li><p class="date">' + date + ':</p><b>' + message + '</b></li>');
+function appendChat(source, date, message) {
+  $('#' + source + '-list').append('<li><p class="date">' + date + ':</p><b>' + message + '</b></li>');
 }
 
-function scrollBottom(target) {
-  $('#' + target + '-list').scrollTop( $('#' + target + '-list')[0].scrollHeight );
+function scrollBottom(source) {
+  $('#' + source + '-list').scrollTop( $('#' + source + '-list')[0].scrollHeight );
 } 
 
 function datify(date_ms) {
