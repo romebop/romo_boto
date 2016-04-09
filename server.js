@@ -66,7 +66,7 @@ client.connect();
 // store new chat into datastore
 client.on('chat', function(channel, user, message, self) {
   function record(target) {
-    if (user['display-name'] === target) {
+    if (true) { //user['display-name'] === target) {
       var msg = { date: Date.now(), message };
       if (target === "Arteezy") ArteezyChat.push(msg);
       if (target === "Eternalenvyy") EternalenvyyChat.push(msg);
@@ -84,7 +84,7 @@ client.on('chat', function(channel, user, message, self) {
 io.on('connection', function(socket) {
   client.on('chat', function(channel, user, message, self) {
     function update(target) {
-      if (user['display-name'] === target) {
+      if (true) { //user['display-name'] === target) {
         var msg = { date: Date.now(), message, target }; 
         socket.emit('message', msg);
       }
@@ -95,7 +95,7 @@ io.on('connection', function(socket) {
 });
 
 function loadChats(url) {
-  var wut = mongo.connect(url, function(err, db) {
+  mongo.connect(url, function(err, db) {
     assert.equal(null, err);  
     var cursor = db.collection('messages').find();
     cursor.each(function(err, doc) {
