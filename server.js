@@ -52,8 +52,7 @@ var options = {
     username: twitch_username,
     password: twitch_password
   },
-  //channels: ['arteezy', 'eternalenvyy']
-  channels: ['rome_bop']
+  channels: ['arteezy', 'eternalenvyy']
 };
 
 var client = new tmi.client(options);
@@ -61,32 +60,24 @@ client.connect();
 
 // store new messages into mongo
 client.on('chat', function(channel, user, message, self) {
-  function record(source) {
-    if (user['display-name'] === source || user['display-name'] === 'rome_bop') {
-      var msg = { date: Date.now(), message, source };
-      storeMessage(mongoURL, msg);
-    }
+  var currentUser = user['display-name'];
+  if (currentUser === 'Arteezy' || currentUser === 'Eternalenvyy') {
+    var msg = { date: Date.now(), message, source: currentUser };
+    storeMessage(mongoURL, msg);
   }
-  record('Arteezy');
-  record('Eternalenvyy');
-
   if (message === 'romo_boto, are you there?') {
     client.action(channel, "I am here! :D");
   }
-
 });
 
 // socket new chat messages to client
 io.on('connection', function(socket) {
   client.on('chat', function(channel, user, message, self) {
-    function update(source) {
-      if (user['display-name'] === source || user['display-name'] === 'rome_bop') {
-        var msg = { date: Date.now(), message, source }; 
-        socket.emit('message', msg);
-      }
+    var currentUser = user['display-name'];
+    if (currentUser === 'Arteezy' || currentUser === 'Eternalenvyy') {
+      var msg = { date: Date.now(), message, source: currentUser };
+      socket.emit('message', msg);
     }
-    update('Arteezy');
-    update('Eternalenvyy');
   });
 });
 

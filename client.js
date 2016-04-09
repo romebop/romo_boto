@@ -4,9 +4,9 @@ populateChat('Eternalenvyy');
 var socket = io();
 
 socket.on('message', function(obj) {
-  var source = obj['source'];
-  var date = datify(obj['date']);
-  var message = obj['message'];
+  var source = obj.source;
+  var date = datify(obj.date);
+  var message = obj.message;
   appendChat(source, date, message);
   scrollBottom(source);
 });
