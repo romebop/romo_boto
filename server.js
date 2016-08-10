@@ -52,7 +52,7 @@ var options = {
     username: twitch_username,
     password: twitch_password
   },
-  channels: ['arteezy', 'eternalenvyy']
+  channels: ['arteezy', 'eternalenvyy', 'teekay415']
 };
 
 var client = new tmi.client(options);
@@ -97,7 +97,7 @@ function storeMessage(url, message) {
 function connectAndRespond(url, source, res) {
   mongo.connect(url, function(err, db) {
     if (err) throw err;
-    db.collection('messages').find({source: source}).toArray(function(err, docs) {
+    db.collection('messages').findOne().toArray(function(err, docs) {
       if (err) throw err;
       res.json(docs);
       db.close();
