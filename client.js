@@ -3,7 +3,7 @@ populateChat('Eternalenvyy');
 
 var socket = io();
 
-socket.on('message', function(obj) {
+socket.on('chat', function(obj) {
   var source = obj.source;
   var date = datify(obj.date);
   var message = obj.message;

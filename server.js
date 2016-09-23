@@ -8,22 +8,27 @@ const mongo = require('mongodb').MongoClient;
 const assert = require('assert');
 
 app.set('port', (process.env.PORT || 3000));
+app.use(express.static(__dirname));
+
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 app.get('/Arteezy', function(req, res) {
-  connectAndRespond(mongoURL, 'Arteezy', res);
+  fetchAndRespond('Arteezy', res);
 });
 app.get('/Eternalenvyy', function(req, res) {
-  connectAndRespond(mongoURL, 'Eternalenvyy', res);
-});
-app.use(express.static(__dirname));
-
-http.listen(app.get('port'), function() {
-  console.log('Server running on localhost:' + app.get('port'));
+  fetchAndRespond('Eternalenvyy', res);
 });
 
-// read from environment config if on heroku
+function fetchAndRespond(source, res) {
+  var chatColl = myDB.collection(source);
+  chatColl.find().sort({date: 1}).toArray(function(err, docs) {
+    if (err) throw err;
+    res.json(docs);
+  });
+}
+
+// read config variables
 try {
   var fileContents = fs.readFileSync('config.json');
   var config = JSON.parse(fileContents);
@@ -40,6 +45,16 @@ try {
 
 var mongoURL = 'mongodb://' + mongo_username + ':' + mongo_password + '@ds019990.mlab.com:19990/heroku_mfhrc2hl';
 
+var myDB;
+
+mongo.connect(mongoURL, function(err, db) {
+  if (err) throw err;
+  myDB = db;
+  http.listen(app.get('port'), function() {
+    console.log('Server running on localhost:' + app.get('port'));
+  });
+});
+
 var options = {
   options: {
     debug: true
@@ -52,18 +67,30 @@ var options = {
     username: twitch_username,
     password: twitch_password
   },
-  channels: ['arteezy', 'eternalenvyy', 'teekay415']
+  channels: ['arteezy', 'eternalenvyy']
 };
 
 var client = new tmi.client(options);
+
 client.connect();
 
-// store new messages into mongo
 client.on('chat', function(channel, user, message, self) {
+  console.log(channel);
+  console.log(user);
+  console.log(message);
+  console.log(self);
+  // logs any message from rtz or ee to respective collection
   var currentUser = user['display-name'];
   if (currentUser === 'Arteezy' || currentUser === 'Eternalenvyy') {
-    var msg = { date: Date.now(), message, source: currentUser };
-    storeMessage(mongoURL, msg);
+    var chat = { 
+      date: Date.now(), 
+      source: currentUser,
+      message, 
+    };
+    var chatColl = myDB.collection(currentUser);
+    chatColl.insertOne(chat, function(err) {
+      if (err) throw err;
+    });
   }
   if (message === 'romo_boto, are you there?') {
     client.action(channel, "I am here! :D");
@@ -75,32 +102,12 @@ io.on('connection', function(socket) {
   client.on('chat', function(channel, user, message, self) {
     var currentUser = user['display-name'];
     if (currentUser === 'Arteezy' || currentUser === 'Eternalenvyy') {
-      var msg = { date: Date.now(), message, source: currentUser };
-      socket.emit('message', msg);
+      var chat = { 
+        date: Date.now(), 
+        source: currentUser,
+        message, 
+      };
+      socket.emit('chat', chat);
     }
   });
 });
-
-// document schema: { date, message, source }
-function storeMessage(url, message) {
-  mongo.connect(url, function(err, db) {
-    if (err) throw err;
-    var col = db.collection('messages');
-    col.insertOne(message, function(err, r) {
-      if (err) throw err;
-      db.close();
-    });
-  });
-}
-
-// connect to database and send json response
-function connectAndRespond(url, source, res) {
-  mongo.connect(url, function(err, db) {
-    if (err) throw err;
-    db.collection('messages').findOne().toArray(function(err, docs) {
-      if (err) throw err;
-      res.json(docs);
-      db.close();
-    });
-  });
-}
