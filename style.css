@@ -58,3 +58,22 @@ li {
 .header {
   font-size: 20px;
 }
+
+.btn {
+  -webkit-border-radius: 10;
+  -moz-border-radius: 10;
+  border-radius: 10px;
+  font-family: Courier New;
+  color: #ffffff;
+  font-size: 12px;
+  background: #40acc7;
+  padding: 3px 7px 3px 7px;
+  text-decoration: none;
+  position: relative;
+  bottom: 2px;
+}
+
+.btn:hover {
+  background: #4b758f;
+  text-decoration: none;
+}
