@@ -80,7 +80,6 @@ client.on('chat', function(channel, user, message, self) {
   if (currentUser === 'Arteezy' || currentUser === 'Eternalenvyy') {
     var chat = { 
       date: Date.now(), 
-      source: currentUser,
       message, 
     };
     var chatColl = myDB.collection(currentUser);
