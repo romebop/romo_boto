@@ -75,10 +75,6 @@ var client = new tmi.client(options);
 client.connect();
 
 client.on('chat', function(channel, user, message, self) {
-  console.log(channel);
-  console.log(user);
-  console.log(message);
-  console.log(self);
   // logs any message from rtz or ee to respective collection
   var currentUser = user['display-name'];
   if (currentUser === 'Arteezy' || currentUser === 'Eternalenvyy') {
