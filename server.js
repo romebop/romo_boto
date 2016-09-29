@@ -22,7 +22,7 @@ app.get('/Eternalenvyy', function(req, res) {
 
 function fetchAndRespond(source, res) {
   var chatColl = myDB.collection(source);
-  chatColl.find().sort({date: 1}).toArray(function(err, docs) {
+  chatColl.find({}, {'_id': false}).sort({date: 1}).toArray(function(err, docs) {
     if (err) throw err;
     res.json(docs);
   });
@@ -78,9 +78,9 @@ client.on('chat', function(channel, user, message, self) {
   // logs any message from rtz or ee to respective collection
   var currentUser = user['display-name'];
   if (currentUser === 'Arteezy' || currentUser === 'Eternalenvyy') {
-    var chat = { 
-      date: Date.now(), 
-      message, 
+    var chat = {
+      date: Date.now(),
+      message,
     };
     var chatColl = myDB.collection(currentUser);
     chatColl.insertOne(chat, function(err) {
@@ -97,10 +97,10 @@ io.on('connection', function(socket) {
   client.on('chat', function(channel, user, message, self) {
     var currentUser = user['display-name'];
     if (currentUser === 'Arteezy' || currentUser === 'Eternalenvyy') {
-      var chat = { 
-        date: Date.now(), 
+      var chat = {
+        date: Date.now(),
         source: currentUser,
-        message, 
+        message,
       };
       socket.emit('chat', chat);
     }
