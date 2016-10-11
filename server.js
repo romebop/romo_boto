@@ -77,7 +77,7 @@ client.connect();
 client.on('chat', function(channel, user, message, self) {
   // logs any message from rtz or ee to respective collection
   var currentUser = user['display-name'];
-  if (currentUser === 'Arteezy' || currentUser === 'Eternalenvyy') {
+  if (currentUser === 'Arteezy' || currentUser === 'EternaLEnVyy') {
     var chat = {
       date: Date.now(),
       message,
@@ -96,7 +96,7 @@ client.on('chat', function(channel, user, message, self) {
 io.on('connection', function(socket) {
   client.on('chat', function(channel, user, message, self) {
     var currentUser = user['display-name'];
-    if (currentUser === 'Arteezy' || currentUser === 'Eternalenvyy') {
+    if (currentUser === 'Arteezy' || currentUser === 'EternaLEnVyy') {
       var chat = {
         date: Date.now(),
         source: currentUser,

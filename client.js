@@ -1,5 +1,5 @@
 populateChat('Arteezy');
-populateChat('Eternalenvyy');
+populateChat('EternaLEnVyy');
 
 var socket = io();
 
@@ -17,7 +17,7 @@ function populateChat(source) {
       appendChat(source, datify(d.date), d.message);
     });
     scrollBottom(source);
-  });  
+  });
 }
 
 function appendChat(source, date, message) {
@@ -26,7 +26,7 @@ function appendChat(source, date, message) {
 
 function scrollBottom(source) {
   $('#' + source + '-list').scrollTop( $('#' + source + '-list')[0].scrollHeight );
-} 
+}
 
 function datify(date_ms) {
   var time = new Date(date_ms);
