@@ -6,9 +6,12 @@ const tmi = require('tmi.js');
 const fs = require('fs');
 const mongo = require('mongodb').MongoClient;
 const assert = require('assert');
+const favicon = require('serve-favicon');
+const path = require('path');
 
 app.set('port', (process.env.PORT || 3000));
 app.use(express.static(__dirname));
+app.use(favicon('favicon.ico'));
 
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
